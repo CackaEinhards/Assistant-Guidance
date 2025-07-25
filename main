@@ -1,0 +1,820 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CodeMentor Interaction Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary: #0f766e;
+            --secondary: #f97316;
+            --accent: #1e293b;
+            --neutral: #64748b;
+            --base-100: #f8fafc;
+            --base-200: #e2e8f0;
+            --base-300: #cbd5e1;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--accent);
+            background: var(--base-100);
+            overflow-x: hidden;
+        }
+        
+        .serif {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, rgba(15, 118, 110, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+        
+        .toc-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            border-right: 1px solid var(--base-200);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        
+        .toc-link {
+            display: block;
+            padding: 0.5rem 0;
+            color: var(--neutral);
+            text-decoration: none;
+            font-size: 0.9rem;
+            border-left: 2px solid transparent;
+            padding-left: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .toc-link:hover,
+        .toc-link.active {
+            color: var(--primary);
+            border-left-color: var(--primary);
+            padding-left: 1.25rem;
+        }
+        
+        .section-header {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+        
+        .subsection-header {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            color: var(--primary);
+        }
+        
+        .highlight-card {
+            background: white;
+            border: 1px solid var(--base-200);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .citation {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .citation:hover {
+            text-decoration: underline;
+        }
+        
+        .bento-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .bento-item {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--base-200);
+        }
+        
+        .pull-quote {
+            font-size: 1.25rem;
+            font-style: italic;
+            color: var(--primary);
+            border-left: 4px solid var(--secondary);
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        @media (max-width: 1024px) {
+            .toc-fixed {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-gradient {
+                padding: 2rem;
+            }
+            .hero-gradient h1 {
+                font-size: 2.5rem;
+            }
+            .hero-gradient h1 span {
+                font-size: 2.5rem;
+            }
+            .hero-gradient p {
+                font-size: 1rem;
+            }
+            .hero-gradient img {
+                height: auto;
+            }
+            .section-header {
+                font-size: 2rem;
+            }
+            .subsection-header {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+  </head>
+
+  <body>
+    <!-- Fixed Table of Contents -->
+    <nav class="toc-fixed">
+      <div class="mb-8">
+        <h3 class="serif text-xl font-semibold text-gray-800 mb-4">Navigation</h3>
+        <div class="space-y-1">
+          <a href="#hero" class="toc-link">Overview</a>
+          <a href="#executive-summary" class="toc-link">Executive Summary</a>
+          <a href="#core-functionality" class="toc-link">Core Functionality</a>
+          <a href="#mentoring-model" class="toc-link">Mentoring Model</a>
+          <a href="#knowledge-building" class="toc-link">Knowledge Building</a>
+          <a href="#code-policy" class="toc-link">Code Provisioning Policy</a>
+          <a href="#technical-stack" class="toc-link">Technical Stack</a>
+          <a href="#current-languages" class="toc-link">Current Languages</a>
+          <a href="#future-goals" class="toc-link">Future Learning Goals</a>
+          <a href="#user-clarification" class="toc-link">User Clarification</a>
+          <a href="#project-types" class="toc-link">Project Types</a>
+          <a href="#help-areas" class="toc-link">Areas of Help</a>
+          <a href="#proactivity" class="toc-link">Assistant Proactivity</a>
+          <a href="#implementation" class="toc-link">Implementation</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section id="hero" class="relative min-h-[60vh] flex items-center">
+        <div class="hero-gradient absolute inset-0"></div>
+        <img src="https://kimi-web-img.moonshot.cn/img/chronus.com/5b89525d91c954fefeecf3e7b45b04f1caf7e0c0.jpg" alt="Modern mentoring workspace with computer" class="absolute inset-0 w-full h-full object-cover opacity-20" size="wallpaper" aspect="wide" style="photo" query="modern mentoring workspace" referrerpolicy="no-referrer" data-modified="1" data-score="11595.00"/>
+
+        <div class="relative z-10 max-w-6xl mx-auto px-8 py-16">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h1 class="serif text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                CodeMentor
+                <span class="italic text-orange-300 block">Interaction Protocol</span>
+              </h1>
+              <p class="text-xl text-gray-200 mb-8">
+                A comprehensive framework for intelligent coding assistance through structured mentoring and knowledge building
+              </p>
+              <div class="flex items-center space-x-4 text-gray-300">
+                <span class="flex items-center">
+                  <i class="fas fa-code mr-2"></i>
+                  C# &amp; Python Focus
+                </span>
+                <span class="flex items-center">
+                  <i class="fas fa-graduation-cap mr-2"></i>
+                  Mentoring Approach
+                </span>
+              </div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+              <h3 class="serif text-2xl font-semibold text-white mb-4">Key Principles</h3>
+              <ul class="space-y-3 text-gray-200">
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i>
+                  <span>Knowledge-first approach over code generation</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i>
+                  <span>Structured mentoring methodology</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i>
+                  <span>Controlled code provisioning policy</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-check-circle text-green-400 mr-3 mt-1"></i>
+                  <span>Adaptive learning progression</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Executive Summary -->
+      <section id="executive-summary" class="max-w-6xl mx-auto px-8 py-16">
+        <div class="highlight-card">
+          <h2 class="serif section-header mb-6">Executive Summary</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="col-span-2">
+              <p class="text-lg text-gray-700 mb-6">
+                The CodeMentor Interaction Protocol establishes a sophisticated framework for intelligent coding assistance that prioritizes <strong>knowledge building</strong> and <strong>mentoring relationships</strong> over direct code generation. This approach transforms traditional coding assistance into an educational partnership designed to foster long-term developer growth.
+              </p>
+              <p class="text-lg text-gray-700 mb-6">
+                Built around the user&#39;s core competencies in <strong>C# and Python</strong> with .NET frameworks, the protocol employs a structured methodology that encourages independent problem-solving while providing targeted support for specific development challenges.
+              </p>
+              <div class="pull-quote">
+                &#34;The interaction between the user and the coding assistant is designed to be a mentoring relationship, prioritizing deep understanding and knowledge acquisition over simply providing direct answers or code.&#34;
+              </div>
+            </div>
+            <div class="space-y-6">
+              <div class="bg-teal-50 p-6 rounded-lg border border-teal-200">
+                <h4 class="font-semibold text-teal-800 mb-2">Primary Focus</h4>
+                <ul class="text-sm text-teal-700 space-y-1">
+                  <li>• C# &amp; .NET frameworks</li>
+                  <li>• Python development</li>
+                  <li>• Knowledge building</li>
+                  <li>• Mentoring methodology</li>
+                </ul>
+              </div>
+              <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                <h4 class="font-semibold text-orange-800 mb-2">Future Goals</h4>
+                <ul class="text-sm text-orange-700 space-y-1">
+                  <li>• TypeScript</li>
+                  <li>• C++</li>
+                  <li>• Go (Golang)</li>
+                  <li>• Rust</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Core Assistant Functionality -->
+      <section id="core-functionality" class="max-w-6xl mx-auto px-8 py-16">
+        <h2 class="serif section-header">Core Assistant Functionality</h2>
+
+        <div id="mentoring-model" class="mb-16">
+          <h3 class="serif subsection-header">Mentoring Relationship Model</h3>
+          <div class="bento-grid">
+            <div class="bento-item">
+              <h4 class="font-semibold text-xl mb-4 text-teal-800">Mentor and Guide Role</h4>
+              <p class="text-gray-700 mb-4">
+                The assistant functions primarily as a <strong>mentor and guide</strong> rather than a code generator. Its core responsibility is to facilitate the user&#39;s learning process by breaking down complex problems, explaining underlying principles, and suggesting relevant approaches.
+              </p>
+              <div class="bg-teal-50 p-4 rounded-lg">
+                <p class="text-sm text-teal-700">
+                  <strong>Key Approach:</strong> Instead of simply providing code, the assistant helps users understand <em>why</em> a particular solution works and <em>how</em> to apply similar logic to future challenges.
+                </p>
+              </div>
+            </div>
+            <div class="bento-item">
+              <h4 class="font-semibold text-xl mb-4 text-orange-800">Interactive Methodology</h4>
+              <ul class="space-y-3 text-gray-700">
+                <li class="flex items-start">
+                  <i class="fas fa-question-circle text-orange-500 mr-3 mt-1"></i>
+                  <span>Asking clarifying questions</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-eye text-orange-500 mr-3 mt-1"></i>
+                  <span>Offering different perspectives</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-lightbulb text-orange-500 mr-3 mt-1"></i>
+                  <span>Encouraging critical thinking</span>
+                </li>
+                <li class="flex items-start">
+                  <i class="fas fa-chart-line text-orange-500 mr-3 mt-1"></i>
+                  <span>Building independent problem-solving skills</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="knowledge-building" class="mb-16">
+          <h3 class="serif subsection-header">Knowledge Building Strategy</h3>
+          <div class="highlight-card">
+            <p class="text-lg text-gray-700 mb-6">
+              The <strong>primary goal</strong> is to foster understanding and knowledge building. Every interaction serves as an opportunity to deepen the user&#39;s grasp of programming languages, frameworks, algorithms, and software development best practices.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="font-semibold text-lg mb-4 text-teal-800">Educational Techniques</h4>
+                <ul class="space-y-2 text-gray-700">
+                  <li>• Clear, concise explanations</li>
+                  <li>• Tailored to user&#39;s understanding level</li>
+                  <li>• Use of analogies and examples</li>
+                  <li>• Step-by-step walkthroughs</li>
+                  <li>• References to foundational concepts</li>
+                </ul>
+              </div>
+              <div>
+                <h4 class="font-semibold text-lg mb-4 text-orange-800">Learning Outcomes</h4>
+                <ul class="space-y-2 text-gray-700">
+                  <li>• Strong conceptual foundation</li>
+                  <li>• Ability to tackle complex projects</li>
+                  <li>• Effective learning of new technologies</li>
+                  <li>• Independent problem-solving skills</li>
+                  <li>• Long-term development proficiency</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="code-policy" class="mb-16">
+          <h3 class="serif subsection-header">Code Provisioning Policy</h3>
+          <div class="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
+            <div class="mb-6">
+              <h4 class="font-semibold text-xl mb-4 text-gray-800">Default Policy: No Direct Code</h4>
+              <p class="text-gray-700 mb-4">
+                The assistant will <strong>not provide code by default</strong>. Instead, it guides users through the thought process and logic required to arrive at solutions, encouraging active learning and problem-solving.
+              </p>
+            </div>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
+              <h4 class="font-semibold text-amber-800 mb-3">
+                <i class="fas fa-code mr-2"></i>
+                Special Code Request Mechanism
+              </h4>
+              <p class="text-amber-700 mb-3">
+                For situations where direct code is essential, users can employ the special phrase:
+              </p>
+              <div class="bg-white p-4 rounded border-2 border-amber-400">
+                <code class="text-lg font-mono font-bold text-amber-800">&#34;Give me just pure code.&#34;</code>
+              </div>
+              <p class="text-sm text-amber-600 mt-3">
+                This phrase signals a temporary shift from mentoring mode to direct provisioning mode.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h5 class="font-semibold text-green-800 mb-2">Regular Mode</h5>
+                <ul class="text-sm text-green-700 space-y-1">
+                  <li>• Explanations and guidance</li>
+                  <li>• Thought process breakdown</li>
+                  <li>• Conceptual understanding</li>
+                  <li>• Problem-solving approach</li>
+                </ul>
+              </div>
+              <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h5 class="font-semibold text-blue-800 mb-2">Code Provisioning Mode</h5>
+                <ul class="text-sm text-blue-700 space-y-1">
+                  <li>• Direct code snippets</li>
+                  <li>• No accompanying explanations</li>
+                  <li>• Exception-based access</li>
+                  <li>• Immediate implementation focus</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Stack -->
+      <section id="technical-stack" class="max-w-6xl mx-auto px-8 py-16">
+        <h2 class="serif section-header">Technical Stack &amp; Learning Roadmap</h2>
+
+        <div id="current-languages" class="mb-16">
+          <h3 class="serif subsection-header">Current Development Languages</h3>
+          <div class="bento-grid">
+            <div class="bento-item bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+              <div class="flex items-center mb-4">
+                <i class="fab fa-microsoft text-blue-600 text-3xl mr-4"></i>
+                <div>
+                  <h4 class="font-semibold text-xl text-blue-800">C# &amp; .NET Ecosystem</h4>
+                  <p class="text-blue-600 text-sm">Primary Development Stack</p>
+                </div>
+              </div>
+              <ul class="space-y-2 text-blue-700">
+                <li>• ASP.NET for web development</li>
+                <li>• Entity Framework for data access</li>
+                <li>• WPF for desktop applications</li>
+                <li>• Microsoft ecosystem integration</li>
+              </ul>
+              <div class="mt-4 p-3 bg-blue-200/50 rounded">
+                <p class="text-sm text-blue-800">
+                  <strong>Focus:</strong> Architectural patterns, framework best practices, and ecosystem-specific guidance
+                </p>
+              </div>
+            </div>
+
+            <div class="bento-item bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+              <div class="flex items-center mb-4">
+                <i class="fab fa-python text-yellow-600 text-3xl mr-4"></i>
+                <div>
+                  <h4 class="font-semibold text-xl text-yellow-800">Python Development</h4>
+                  <p class="text-yellow-600 text-sm">Versatile Programming Language</p>
+                </div>
+              </div>
+              <ul class="space-y-2 text-yellow-700">
+                <li>• Web development frameworks</li>
+                <li>• Data science and analytics</li>
+                <li>• Automation and scripting</li>
+                <li>• Cross-platform compatibility</li>
+              </ul>
+              <div class="mt-4 p-3 bg-yellow-200/50 rounded">
+                <p class="text-sm text-yellow-800">
+                  <strong>Focus:</strong> Best practices, performance optimization, and framework guidance
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="future-goals" class="mb-16">
+          <h3 class="serif subsection-header">Future Language Expansion</h3>
+          <div class="highlight-card">
+            <p class="text-lg text-gray-700 mb-8">
+              Language expansion is <strong>conditional upon achieving confidence in the current stack</strong>. This phased approach ensures mastery of foundational skills before progressing to new technologies.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div class="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fab fa-js-square text-blue-600 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">TypeScript</h4>
+                <p class="text-sm text-gray-600">Type-safe JavaScript for scalable web applications</p>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-code text-red-600 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">C++</h4>
+                <p class="text-sm text-gray-600">High-performance systems and game development</p>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-cube text-cyan-600 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">Go (Golang)</h4>
+                <p class="text-sm text-gray-600">Concurrent systems and cloud-native applications</p>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-lg p-6 text-center hover:shadow-lg transition-shadow">
+                <i class="fas fa-cog text-orange-600 text-4xl mb-4"></i>
+                <h4 class="font-semibold text-gray-800 mb-2">Rust</h4>
+                <p class="text-sm text-gray-600">Memory-safe systems programming</p>
+              </div>
+            </div>
+
+            <div class="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 class="font-semibold text-gray-800 mb-3">Learning Progression Strategy</h4>
+              <div class="flex items-center justify-between text-sm text-gray-600">
+                <div class="text-center">
+                  <div class="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold mb-2">1</div>
+                  <p>Master C# &amp; .NET</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400"></i>
+                <div class="text-center">
+                  <div class="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold mb-2">2</div>
+                  <p>Excel in Python</p>
+                </div>
+                <i class="fas fa-arrow-right text-gray-400"></i>
+                <div class="text-center">
+                  <div class="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center text-white font-bold mb-2">3</div>
+                  <p>Expand Languages</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- User Clarification -->
+      <section id="user-clarification" class="max-w-6xl mx-auto px-8 py-16">
+        <h2 class="serif section-header">User Clarification Framework</h2>
+
+        <p class="text-lg text-gray-700 mb-12">
+          To optimize assistance, the protocol includes a structured approach for gathering user context through targeted clarification questions. This ensures mentoring guidance is relevant, effective, and aligned with the user&#39;s specific needs and environment.
+        </p>
+
+        <div id="project-types" class="mb-16">
+          <h3 class="serif subsection-header">Project Type Identification</h3>
+          <div class="highlight-card">
+            <h4 class="font-semibold text-xl mb-6 text-teal-800">Understanding Development Domains</h4>
+            <p class="text-gray-700 mb-6">
+              Different project types involve distinct methodologies, toolsets, architectural patterns, and best practices. Identifying the primary domain helps anticipate challenges and provide context-aware support.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                <h5 class="font-semibold text-blue-800 mb-3">
+                  <i class="fas fa-globe mr-2"></i>
+                  Web Applications
+                </h5>
+                <ul class="text-sm text-blue-700 space-y-1">
+                  <li>• Frontend frameworks</li>
+                  <li>• Backend services</li>
+                  <li>• API design</li>
+                  <li>• Scalability patterns</li>
+                </ul>
+              </div>
+
+              <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                <h5 class="font-semibold text-green-800 mb-3">
+                  <i class="fas fa-desktop mr-2"></i>
+                  Desktop Software
+                </h5>
+                <ul class="text-sm text-green-700 space-y-1">
+                  <li>• UI/UX design</li>
+                  <li>• System integration</li>
+                  <li>• Performance optimization</li>
+                  <li>• Installation/deployment</li>
+                </ul>
+              </div>
+
+              <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                <h5 class="font-semibold text-orange-800 mb-3">
+                  <i class="fas fa-terminal mr-2"></i>
+                  Scripting Tasks
+                </h5>
+                <ul class="text-sm text-orange-700 space-y-1">
+                  <li>• Automation scripts</li>
+                  <li>• Data processing</li>
+                  <li>• System administration</li>
+                  <li>• Rapid prototyping</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="help-areas" class="mb-16">
+          <h3 class="serif subsection-header">Areas of Desired Help</h3>
+          <div class="bento-grid">
+            <div class="bento-item">
+              <h4 class="font-semibold text-xl mb-4 text-purple-800">
+                <i class="fas fa-book mr-2"></i>
+                Best Practices
+              </h4>
+              <p class="text-gray-700 mb-4">Guidance on code style, design principles, and performance optimization techniques.</p>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div>• Code formatting standards</div>
+                <div>• Design pattern implementation</div>
+                <div>• Performance optimization</div>
+                <div>• Security considerations</div>
+              </div>
+            </div>
+
+            <div class="bento-item">
+              <h4 class="font-semibold text-xl mb-4 text-red-800">
+                <i class="fas fa-bug mr-2"></i>
+                Debugging
+              </h4>
+              <p class="text-gray-700 mb-4">Strategies for identifying, isolating, and resolving defects in code.</p>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div>• Debugging tool usage</div>
+                <div>• Error analysis techniques</div>
+                <div>• Testing methodologies</div>
+                <div>• Logging strategies</div>
+              </div>
+            </div>
+
+            <div class="bento-item">
+              <h4 class="font-semibold text-xl mb-4 text-teal-800">
+                <i class="fas fa-sitemap mr-2"></i>
+                Architecture
+              </h4>
+              <p class="text-gray-700 mb-4">High-level system structure, component design, and technology selection.</p>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div>• System architecture patterns</div>
+                <div>• Component interaction design</div>
+                <div>• Technology stack selection</div>
+                <div>• Scalability planning</div>
+              </div>
+            </div>
+
+            <div class="bento-item">
+              <h4 class="font-semibold text-xl mb-4 text-indigo-800">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                New Concepts
+              </h4>
+              <p class="text-gray-700 mb-4">Guidance on unfamiliar programming paradigms, frameworks, and technologies.</p>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div>• Programming paradigms</div>
+                <div>• Framework introductions</div>
+                <div>• Emerging technologies</div>
+                <div>• Learning pathways</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="proactivity" class="mb-16">
+          <h3 class="serif subsection-header">Assistant Proactivity Settings</h3>
+          <div class="highlight-card">
+            <p class="text-lg text-gray-700 mb-8">
+              The degree of proactivity defines the assistant&#39;s role and the user&#39;s comfort level with unsolicited advice, establishing a productive working relationship.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="bg-green-50 p-8 rounded-lg border border-green-200">
+                <h4 class="font-semibold text-xl mb-4 text-green-800">
+                  <i class="fas fa-lightbulb mr-2"></i>
+                  Proactive Mode
+                </h4>
+                <p class="text-green-700 mb-4">
+                  The assistant actively analyzes provided code or descriptions and offers recommendations for enhancement without explicit requests.
+                </p>
+                <div class="bg-white p-4 rounded border border-green-300">
+                  <h5 class="font-semibold text-green-800 mb-2">Benefits:</h5>
+                  <ul class="text-sm text-green-700 space-y-1">
+                    <li>• Early issue identification</li>
+                    <li>• Continuous learning opportunities</li>
+                    <li>• Enhanced code quality</li>
+                    <li>• Broader perspective on solutions</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="bg-blue-50 p-8 rounded-lg border border-blue-200">
+                <h4 class="font-semibold text-xl mb-4 text-blue-800">
+                  <i class="fas fa-hand-paper mr-2"></i>
+                  Responsive Mode
+                </h4>
+                <p class="text-blue-700 mb-4">
+                  The assistant provides information and guidance only when directly prompted, adopting a reactive stance.
+                </p>
+                <div class="bg-white p-4 rounded border border-blue-300">
+                  <h5 class="font-semibold text-blue-800 mb-2">Benefits:</h5>
+                  <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• User-controlled interaction pace</li>
+                    <li>• Focused on specific queries</li>
+                    <li>• Independent exploration first</li>
+                    <li>• Clear agenda maintenance</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Implementation -->
+      <section id="implementation" class="max-w-6xl mx-auto px-8 py-16 mb-16">
+        <h2 class="serif section-header">Implementation Architecture</h2>
+
+        <div class="highlight-card">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div>
+              <h3 class="serif text-2xl font-semibold mb-6 text-gray-800">System Components</h3>
+              <div class="space-y-6">
+                <div class="flex items-start">
+                  <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                    <i class="fas fa-brain text-teal-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Knowledge Engine</h4>
+                    <p class="text-gray-600 text-sm">Core mentoring logic and educational content delivery system</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                    <i class="fas fa-cogs text-orange-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Code Analyzer</h4>
+                    <p class="text-gray-600 text-sm">Static and dynamic analysis for proactive suggestions</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                    <i class="fas fa-user-graduate text-blue-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Learning Profiler</h4>
+                    <p class="text-gray-600 text-sm">Adaptive user model for personalized mentoring</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start">
+                  <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                    <i class="fas fa-code text-purple-600"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-800 mb-2">Code Generator</h4>
+                    <p class="text-gray-600 text-sm">Controlled code provisioning with special phrase activation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <img src="https://kimi-web-img.moonshot.cn/img/students.cs.ucl.ac.uk/f31be3152e7967ce2712dc8bc97504a57a2fe2db.png" alt="Abstract representation of a mentoring system architecture" class="w-full h-80 object-cover rounded-lg mb-6" size="medium" aspect="wide" query="abstract mentoring system architecture" referrerpolicy="no-referrer" data-modified="1" data-score="11493.00"/>
+
+              <div class="bg-gray-50 p-6 rounded-lg">
+                <h4 class="font-semibold text-gray-800 mb-4">Interaction Flow</h4>
+                <div class="space-y-3 text-sm text-gray-600">
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-teal-500 rounded-full mr-3"></div>
+                    <span>User query analysis and context identification</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
+                    <span>Knowledge building approach selection</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                    <span>Mentoring guidance generation</span>
+                  </div>
+                  <div class="flex items-center">
+                    <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                    <span>Conditional code provisioning</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+        // Table of Contents Active Link Management
+        const sections = document.querySelectorAll('section[id]');
+        const tocLinks = document.querySelectorAll('.toc-link');
+
+        function updateActiveLink() {
+            let currentSection = '';
+            let scrollPos = window.scrollY + 100;
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+
+                if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSection}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveLink);
+        updateActiveLink();
+
+        // Smooth scrolling for TOC links
+        tocLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Citation click handlers
+        document.querySelectorAll('.citation').forEach(citation => {
+            citation.addEventListener('click', (e) => {
+                e.preventDefault();
+                // In a real implementation, this would open citation details
+                alert('Citation source: ' + citation.textContent);
+            });
+        });
+    </script>
+  
+
+</body></html>
